@@ -44,12 +44,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this._composeTemplate(superTemplate, superBlock);
           superBlock.parentNode.replaceChild(superTemplate, superBlock);
         }
-        // extract fallback content into our working template
-        this._composeTemplate(template);
         // copy the working template and store it as the sub-classable template.
         this._subTemplate = template.cloneNode(true);
-        return template;
+        // extract fallback content into our working template
+        this._composeTemplate(template);
       }
+      return template;
     },
 
     // if we use our super template, our styles concat to our super's.

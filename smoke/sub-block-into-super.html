@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>sub block into super</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="../../polymer/polymer.html">
+  <link rel="import" href="../template-composition.html">
+
+</head>
+<body>
+
+  <!-- Template composition -->
+
+  <dom-module id="x-base">
+  <template>
+    <div>
+      <div>Who am I?</div>
+      <template block="content">I am x-base!</template>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'x-base',
+      behaviors: [Polymer.TemplateComposition]
+    });
+  </script>
+</dom-module>
+
+<!-- An extendor that composes base's template! -->
+<dom-module id="x-extend">
+  <template>
+    <template block="super">
+      <template block="content">I am x-extend!</template>      
+    </template>
+  </template>
+  <script>
+    Polymer({
+      is: 'x-extend',
+      extends: 'x-base',
+      behaviors: [Polymer.TemplateComposition]
+    });
+  </script>
+</dom-module>
+  
+  <x-extend></x-extend>
+
+</body>
+</html>
