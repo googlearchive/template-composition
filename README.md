@@ -72,7 +72,26 @@ Here's another [example](http://jsbin.com/vodanu/edit?html,output). It shows com
 </dom-module>
 ```
 
+In the above example, the composed dom for `x-base` and `x-extend` will look like this:
+``` html
+<!-- x-base -->
+<div>
+  <div>Who am I?</div>
+  I am x-base!
+</div>
+
+<!-- x-extend -->
+<div>
+  <div>Who am I?</div>
+  I am x-extend!
+</div>
+```
+
+Here's a [slightly more complicated example](http://jsbin.com/bireraf/edit?html,output) that shows extending an already extended template. 
+
+
 Notes:
 * a superclass needs to include the `Polymer.TemplateComposition` behavior if it defines overridable blocks.
 * a subclass that composes a superclass template will automatically pre-pend the superclass styles.
+* including the `super` template is currently all or nothing. You cannot include only certain blocks in a super template. In addition a subclass cannot supply blocks to fill in a template from a super's superclass.
 * customization: composition can be customized by overriding `_processTemplate(template)` and returning the fully composed template; styling can be customized by overriding `_collectStyles` and returning an array of style elements to be used to style the element.
