@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>template composition</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="../polymer/polymer.html">
+  <link rel="import" href="template-composition2.html">
+
+</head>
+<body>
+
+  <!-- Template composition -->
+
+  <dom-module id="x-simple">
+    <template>
+      <style>
+        .simple {
+          color: green;
+        }
+      </style>
+      <div class="simple">x-simple: {{yo}}</div>
+    </template>
+    <script>
+    HTMLImports.whenReady(function() {
+      Polymer({
+
+        is: 'x-simple',
+
+        properties: {
+          yo: {value: 'yo'}
+        },
+
+        behaviors: [ Polymer.TemplateComposition ]
+      });
+    });
+    </script>
+  </dom-module>
+
+
+  <dom-module id="x-wrap-simple">
+    <template>
+      <style>
+        :host {
+          display: block;
+          border: 4px double tomato;
+          margin: 8px;
+          padding: 8px;
+        }
+
+        .wrap {
+          border: 1px solid navy;
+          padding: 8px;
+        }
+      </style>
+      x-wrap-simple
+      <div class="wrap">
+        <template block="super"></template>
+      </div>
+    </template>
+    <script>
+    HTMLImports.whenReady(function() {
+      Polymer({
+
+        is: 'x-wrap-simple',
+
+        extends: 'x-simple',
+
+        behaviors: [ Polymer.TemplateComposition ]
+      });
+    });
+    </script>
+  </dom-module>
+
+  <dom-module id="x-content">
+    <template>
+      <style>
+        :host {
+          display: block;
+          border: 4px double navy;
+          margin: 8px;
+          padding: 8px;
+        }
+
+        .content { 
+          border: 1px solid black;
+          padding: 8px;
+        }
+      </style>
+      x-blocks
+      <div class="content">
+        <template block="content">
+          <div>This content is from x-content!</div>
+        </template>
+      </div>
+    </template>
+    <script>
+    HTMLImports.whenReady(function() {
+      Polymer({
+
+        is: 'x-content',
+
+        // note: have to include behavior if you use `template insert`
+        behaviors: [ Polymer.TemplateComposition ]
+      });
+    });
+    </script>
+  </dom-module>
+
+  <dom-module id="x-extends-content">
+    <template>
+       <style>
+         .content {
+          border: 1px solid orange;
+          padding: 8px;
+        }
+      </style>
+      x-extends-content
+      <div class="content">
+        <template block="super">
+          <template block="content">This content is from x-extends-content!</template>
+        </template>
+        <template block="more">More from x-extends-content!</template>
+      </div>
+    </template>
+    <script>
+    HTMLImports.whenReady(function() {
+      Polymer({
+
+        is: 'x-extends-content',
+
+        extends: 'x-content',
+
+        behaviors: [ Polymer.TemplateComposition ]
+      });
+    });
+    </script>
+  </dom-module>
+
+  <dom-module id="x-extends-extends-content">
+    <template>
+       <style>
+        .content {
+          border: 1px solid blue;
+          padding: 8px;
+        }
+      </style>
+      x-extends-extends-content
+      <div class="content">
+        <template block="super">
+          <template block="more">This content is from x-extends-extends-content!</template>
+        </template>
+      </div>
+    </template>
+    <script>
+    HTMLImports.whenReady(function() {
+      Polymer({
+
+        is: 'x-extends-extends-content',
+
+        extends: 'x-extends-content',
+
+        behaviors: [ Polymer.TemplateComposition ]
+      });
+    });
+    </script>
+  </dom-module>
+
+  <x-simple></x-simple>
+
+  <x-wrap-simple></x-wrap-simple>
+
+  <hr>
+
+  <x-content></x-content>
+
+  <x-extends-content></x-extends-content>
+
+  <x-extends-extends-content></x-extends-extends-content>
+
+</body>
+</html>

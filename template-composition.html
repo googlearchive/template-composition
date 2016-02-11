@@ -1,0 +1,80 @@
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<script>
+  
+  Polymer.TemplateComposition = {
+    // called on element prototype, not instance
+    // NOTE: there are 3 important registration points where Polymer manipulates
+    // template: 
+    // (1) _prepTemplate: `_template` is located and set, 
+    // (2) _prepStyles: `style` elements are collected (via _collectStyles) 
+    // and removed from the template, 
+    // (3) _prepAnnotations: the element's private `__template` is created from
+    // `_template` if it does not already exist; from `__template`, binding 
+    // `notes` are located and removed.
+    _processTemplate: function(template) {
+      var supr = this.__getSuper(this);
+      // if we have a unique template, try to perform super composition!
+      if (!(supr && this._template === supr._template)) {
+        // get our 'subclass-able' template from super.
+        var superTemplate = (supr && (supr._subTemplate || supr._template));
+        // find the block into which the super template should be placed.
+        var superBlock = 
+          template.content.querySelector('template[block=super]');
+        // there's a super template and a block in which to put it so
+        // perform super composition!
+        if (superBlock && superTemplate) {
+          // set flag for later use in style composition
+          this.__usesSuperTemplate = true;
+          // Copy the super template and remove styles since we'll compose those
+          // separately.
+          superTemplate = superTemplate.cloneNode(true);
+          superTemplate.setAttribute('block', '');
+          Polymer.StyleUtil.removeStyles(superTemplate.content);
+          // mix the super block into the super template and replace the super
+          // block.
+          this._composeTemplate(superTemplate, superBlock);
+          superBlock.parentNode.replaceChild(superTemplate, superBlock);
+        }
+        // extract fallback content into our working template
+        this._composeTemplate(template);
+        // copy the working template and store it as the sub-classable template.
+        this._subTemplate = template.cloneNode(true);
+        return template;
+      }
+    },
+
+    // if we use our super template, our styles concat to our super's.
+    _collectStyles: function() {
+      var superStyles = this.hasOwnProperty('__usesSuperTemplate') && 
+        this.__usesSuperTemplate ? this._styles : [];
+      var styles = superStyles.concat(Polymer.Base._collectStyles.call(this));
+      Polymer.StyleUtil.removeStyleRules(styles);
+      return styles;
+    },
+
+    _composeTemplate: function(target, source) {
+      var slots = target.content.querySelectorAll('template[block]');
+      for (var i=0; i < slots.length; i++) {
+        var n = slots[i];
+        var sel = n.getAttribute('block');
+        var r = source && sel &&
+          source.content.querySelector('template[block=' + sel + ']');
+        if (r) {
+          n.parentNode.replaceChild(r.content.cloneNode(true), n);
+        } else {
+          n.parentNode.replaceChild(n.content, n);
+        }
+      }
+    }
+  };
+
+</script>
